@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found |  QwikURL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #212121;
+            --light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #111, #333);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .error-container {
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 2rem 1.5rem; /* Adjusted padding */
+            max-width: 600px;
+            width: 90%; /* Responsive width */
+        }
+
+        .error-code {
+            font-size: clamp(4rem, 15vw, 6rem); /* Responsive font size */
+            font-weight: 700;
+            margin-bottom: 0;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .error-icon {
+            font-size: clamp(3rem, 10vw, 5rem); /* Responsive font size */
+            margin: 1rem 0;
+            color: var(--accent);
+        }
+
+        .error-container h2 {
+            font-size: clamp(1.5rem, 5vw, 2rem); /* Responsive font size */
+            margin-bottom: 0.75rem;
+        }
+
+        .error-container p {
+            font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive font size */
+        }
+
+
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            display: inline-flex; /* For icon alignment */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+         .btn-primary .fas {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <div class="error-icon">
+            <i class="fas fa-ghost"></i> <!-- Changed icon for variety -->
+        </div>
+        <h2>Oops! Page Not Found</h2>
+        <p class="mb-4">The page you're looking for doesn't exist, might have been removed, or the link is incorrect.</p>
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+</body>
+</html>

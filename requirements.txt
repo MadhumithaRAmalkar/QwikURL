@@ -1,0 +1,6 @@
+dj_database_url==2.3.0
+Django==5.2
+django_heroku==0.3.1
+django-simple-captcha>=0.5.17
+qrcode>=7.3.1
+Pillow>=9.0.0

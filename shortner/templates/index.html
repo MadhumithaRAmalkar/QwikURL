@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> QwikURL | Professional URL Shortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #212121;
+            --light: #f8f9fa;
+            --success: #4caf50;
+            --danger: #f44336;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #111, #333);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--light);
+        }
+
+        .navbar-brand span {
+            color: var(--accent);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: rgba(0,0,0,0.5);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-control, .form-select {
+            background-color: rgba(30, 30, 30, 0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--light);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(40, 40, 40, 0.9);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+            border-color: var(--primary);
+            color: white;
+        }
+        /* Ensure placeholder text is visible */
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            opacity: 1; /* Firefox */
+        }
+        .form-control:-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .form-control::-ms-input-placeholder { /* Microsoft Edge */
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #555;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #666;
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(30, 30, 30, 0.9));
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .url-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 8px;
+            word-break: break-all;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .url-display a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .copy-tooltip {
+            position: absolute;
+            top: -40px; /* Adjusted for better visibility */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--dark); /* Use theme color */
+            color: var(--light);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            opacity: 0;
+            visibility: hidden; /* Control visibility for transition */
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 10;
+        }
+
+        .copy-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .qr-container {
+            margin: 1.5rem auto;
+            width: 180px;
+            height: 180px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+
+        .nav-tabs {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-tabs .nav-link {
+            color: rgba(255,255,255,0.6);
+            border: none; /* Remove default borders */
+            border-bottom: 2px solid transparent; /* Prepare for active state */
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            transition: color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: rgba(255,255,255,0.9);
+            border-bottom-color: rgba(var(--accent), 0.5); /* Subtle hover indicator */
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--accent);
+            background: transparent; /* Remove background for active tab for cleaner look */
+            border-color: transparent; /* Reset general border */
+            border-bottom: 2px solid var(--accent); /* Highlight active tab with bottom border */
+        }
+
+        .stats-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stats-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stats-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stats-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .scanner-container {
+            width: 100%;
+            max-width: 500px; /* Max width of scanner */
+            margin: 0 auto;
+            border-radius: 12px; /* Rounded corners */
+            overflow: hidden; /* Clip video to rounded corners */
+            position: relative; /* For overlay elements */
+            background: #000; /* Fallback background */
+        }
+
+        #scanner-preview {
+            width: 100%;
+            display: block; /* Remove extra space below video */
+            border-radius: 12px; /* Match container, though overflow:hidden on parent handles it */
+        }
+
+
+        .scanner-overlay { /* Optional: if you want a frame inside the video */
+            position: absolute;
+            top: 10%; /* Example framing */
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); /* Dim area outside the frame */
+            pointer-events: none; /* Allow clicks to pass through if needed */
+        }
+
+        .scanner-line {
+            position: absolute;
+            left: 10%; /* Align with example overlay frame */
+            right: 10%; /* Align with example overlay frame */
+            width: 80%; /* Match example overlay frame */
+            height: 2px;
+            background: var(--accent);
+            animation: scan 2.5s linear infinite;
+            box-shadow: 0 0 10px var(--accent); /* Glow effect */
+        }
+
+        @keyframes scan {
+            0% { top: 15%; opacity: 0.5; } /* Start slightly within frame */
+            50% { top: 85%; opacity: 1; }   /* End slightly within frame */
+            100% { top: 15%; opacity: 0.5; }
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .stats-table {
+            width: 100%;
+            margin-top: 1.5rem;
+            border-collapse: separate; /* Allows border-radius on td */
+            border-spacing: 0 8px; /* Spacing between rows */
+        }
+
+        .stats-table th {
+            font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            padding: 0.75rem 1rem; /* Adjusted padding */
+            text-align: left; /* Align text left for headers */
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stats-table td {
+            padding: 0.75rem 1rem; /* Adjusted padding */
+            background: rgba(30, 30, 30, 0.5);
+            vertical-align: middle; /* Align content vertically */
+        }
+
+        .stats-table tr td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .stats-table tr td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .badge-clicks {
+            background: rgba(67, 97, 238, 0.2); /* var(--primary) with alpha */
+            color: var(--accent);
+            font-weight: 500;
+            padding: 0.3rem 0.6rem; /* Slightly larger padding */
+            border-radius: 4px;
+            font-size: 0.85em; /* Adjust size */
+        }
+
+        .table-link {
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .table-link:hover {
+            text-decoration: underline;
+        }
+
+        .captcha-container {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        #captcha-image {
+            border: 1px solid rgba(255,255,255,0.1); /* Add a subtle border */
+            min-height: 50px; /* Prevent collapse if image fails to load */
+            background-color: rgba(0,0,0,0.2); /* Placeholder background */
+        }
+
+        .url-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .url-actions .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .feature-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%; /* Make boxes of equal height in a row */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            flex-grow: 1; /* Allows text to take up space, aligning buttons if any */
+        }
+        /* Alert styling */
+        .alert-container {
+            position: fixed;
+            top: 80px; /* Below navbar */
+            right: 20px;
+            z-index: 1050; /* Above most elements */
+            width: auto;
+            max-width: 400px;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+            .qr-container {
+                width: 140px;
+                height: 140px;
+            }
+            .nav-tabs .nav-link {
+                padding: 0.75rem 1rem; /* Adjust padding for smaller screens */
+            }
+            .feature-box {
+                margin-bottom: 1rem; /* Reduce margin for stacked items */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Qwik<span>URL</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#statsTableAnchor">Statistics</a> <!-- Changed href for clarity -->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alert Container -->
+    <div class="alert-container" id="alertContainer"></div>
+
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-10 col-lg-8"> <!-- Adjusted column for better centering -->
+                <!-- Main Features Section -->
+                <div class="row mb-4" id="features">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="feature-box">
+                            <div class="feature-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <h5 class="feature-title">URL Shortening</h5>
+                            <p class="feature-text">Transform long URLs into concise, easy-to-share links with optional custom aliases.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="feature-box">
+                            <div class="feature-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <h5 class="feature-title">QR Codes</h5>
+                            <p class="feature-text">Generate and scan QR codes for instant mobile access to your shortened links.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-box">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="feature-title">Click Analytics</h5>
+                            <p class="feature-text">Track link performance with detailed click statistics and analytics.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs" id="urlTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="shorten-tab" data-bs-toggle="tab" data-bs-target="#shorten" type="button" role="tab">Shorten URL</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="scan-tab" data-bs-toggle="tab" data-bs-target="#scan" type="button" role="tab">Scan QR Code</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="stats-nav-tab" data-bs-toggle="tab" data-bs-target="#statsContent" type="button" role="tab">Link Stats</button> <!-- Changed IDs -->
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <!-- Shorten URL Tab -->
+                            <div class="tab-pane fade show active" id="shorten" role="tabpanel">
+                                <form id="shorten-form">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="link" class="form-label fw-bold text-white">Long URL</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                            <input type="url" class="form-control" id="link" placeholder="https://example.com/very/long/url/to/shorten" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="custom_code" class="form-label fw-bold text-white">Custom Alias (Optional)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                            <input type="text" class="form-control" id="custom_code" placeholder="e.g. my-brand">
+                                        </div>
+                                        <small class="form-text text-white opacity-75">Leave empty for auto-generated code. (e.g., abc12)</small>
+                                    </div>
+
+                                    <div class="captcha-container mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <label class="form-label mb-0 fw-bold text-white">Verification</label>
+                                            <button type="button" class="btn btn-sm btn-secondary py-1 px-2" id="refresh-captcha">
+                                                <i class="fas fa-sync-alt"></i> Refresh
+                                            </button>
+                                        </div>
+                                        <div class="mb-2 text-center">
+                                            <img id="captcha-image" src="" class="rounded" alt="CAPTCHA Loading..." style="width: 150px; height: 50px; object-fit: contain;">
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                                            <input type="text" class="form-control" id="captcha" placeholder="Enter the code shown above" required>
+                                            <input type="hidden" id="captcha-key" name="captcha_key" value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-bolt"></i> Shorten URL
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="result-box mt-4 d-none" id="resultBox">
+                                    <h5 class="mb-3"><i class="fas fa-check-circle text-success"></i> URL Shortened Successfully!</h5>
+                                    <div class="stats-box mb-3">
+                                        <div class="stats-item">
+                                            <div class="stats-value" id="clickCount">0</div>
+                                            <div class="stats-label">Clicks</div>
+                                        </div>
+                                        <div class="stats-item">
+                                            <div class="stats-value" id="creationDate">Today</div>
+                                            <div class="stats-label">Created</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="url-display">
+                                        <a href="#" id="shortUrl" target="_blank"></a>
+                                        <div class="copy-tooltip" id="copyTooltip">Copied!</div>
+                                    </div>
+
+                                    <div class="qr-container">
+                                        <img id="qrCode" src="" alt="QR Code">
+                                    </div>
+
+                                    <div class="url-actions">
+                                        <button class="btn btn-primary" id="copyShortUrlBtn">
+                                            <i class="fas fa-copy"></i> Copy
+                                        </button>
+                                        <a id="downloadQr" href="#" class="btn btn-secondary" download="qrcode.png">
+                                            <i class="fas fa-download"></i> Download QR
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- QR Scanner Tab -->
+                            <div class="tab-pane fade" id="scan" role="tabpanel">
+                                <div class="text-center mb-3">
+                                    <h5>Scan a QR Code</h5>
+                                    <p class="text-white opacity-75">Position a QR code in front of your camera.</p>
+                                </div>
+
+                                <div class="scanner-container mb-4">
+                                    <video id="scanner-preview" autoplay playsinline muted></video> <!-- Added playsinline and muted -->
+                                    <div class="scanner-overlay"></div> <!-- Optional: Add visual frame -->
+                                    <div class="scanner-line"></div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button id="startScan" class="btn btn-primary">
+                                        <i class="fas fa-camera"></i> Start Scanner
+                                    </button>
+                                    <button id="stopScan" class="btn btn-secondary d-none">
+                                        <i class="fas fa-stop"></i> Stop Scanner
+                                    </button>
+                                </div>
+
+                                <div class="result-box mt-4 d-none" id="scanResultBox">
+                                    <h5><i class="fas fa-qrcode text-success"></i> Scan Result</h5>
+                                    <div class="url-display">
+                                        <a href="#" id="scannedUrl" target="_blank"></a>
+                                    </div>
+                                    <div class="url-actions">
+                                        <button class="btn btn-primary" id="copyScannedUrlBtn">
+                                            <i class="fas fa-copy"></i> Copy
+                                        </button>
+                                        <a id="visitScanned" href="#" class="btn btn-secondary" target="_blank">
+                                            <i class="fas fa-external-link-alt"></i> Visit
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stats Tab -->
+                            <div class="tab-pane fade" id="statsContent" role="tabpanel"> <!-- Changed ID -->
+                                <div class="mb-3" id="statsTableAnchor"> <!-- Added anchor for navbar link -->
+                                    <h5>Your Recent Links</h5>
+                                    <p class="text-white opacity-75">Track the performance of your recently created shortened URLs.</p>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="stats-table" id="statsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Short URL</th>
+                                                <th>Original URL</th>
+                                                <th>Created</th>
+                                                <th>Clicks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if urls %}
+                                                {% for url_entry in urls %} <!-- Changed variable name for clarity -->
+                                                <tr>
+                                                    <td><a href="/{{ url_entry.uuid }}" target="_blank" class="table-link">{{ request.get_host }}/{{ url_entry.uuid }}</a></td>
+                                                    <td><a href="{{ url_entry.link }}" target="_blank" class="table-link" title="{{ url_entry.link }}">{{ url_entry.link|truncatechars:35 }}</a></td>
+                                                    <td>{{ url_entry.created_at|date:"M d, Y" }}</td>
+                                                    <td><span class="badge-clicks">{{ url_entry.click_count }}</span></td>
+                                                </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="4" class="text-center py-3">No links created yet. Shorten one to see it here!</td>
+                                                </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto"> <!-- mt-auto for sticky footer effect with flexbox body -->
+        <div class="container">
+            <p class="mb-0">© {% now "Y" %} QwikURL | Professional URL Shortener | Made with <i class="fas fa-heart text-danger"></i></p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> <!-- Updated jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- qrcode-generator is not used on client-side if QR is generated by server via /qr/<pk> endpoint -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Load initial CAPTCHA
+            refreshCaptcha();
+
+            // Refresh CAPTCHA button
+            $('#refresh-captcha').on('click', function() {
+                refreshCaptcha();
+            });
+
+            // Attach event listeners for copy buttons
+            $('#copyShortUrlBtn').on('click', copyShortUrlToClipboard);
+            $('#copyScannedUrlBtn').on('click', copyScannedUrlToClipboard);
+
+            // Handle tab change to stop scanner if active
+            $('#urlTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                if (e.relatedTarget && $(e.relatedTarget).attr('id') === 'scan-tab') {
+                    // Switched away from Scan QR tab
+                    if (scannerInterval) {
+                        stopScanner();
+                         $('#stopScan').addClass('d-none');
+                         $('#startScan').removeClass('d-none');
+                    }
+                }
+            });
+        });
+
+        function refreshCaptcha() {
+            $.ajax({
+                url: '/captcha/refresh/',
+                method: 'GET',
+                success: function(data) {
+                    $('#captcha-image').attr('src', data.image_url); // Use the full URL from server
+                    $('#captcha-key').val(data.key);
+                },
+                error: function(xhr) {
+                    console.error("Failed to refresh CAPTCHA:", xhr.responseText);
+                    $('#captcha-image').attr('alt', 'CAPTCHA failed to load. Please try again.');
+                    showAlert('Failed to load CAPTCHA. Check console or try refreshing.', 'danger');
+                }
+            });
+        }
+
+        $('#shorten-form').on('submit', function(e) {
+            e.preventDefault();
+            const link = $('#link').val().trim();
+            const custom_code = $('#custom_code').val().trim();
+            const captcha = $('#captcha').val().trim();
+            const captchaKey = $('#captcha-key').val();
+            const token = $('input[name=csrfmiddlewaretoken]').val();
+
+            if (!link) {
+                showAlert('Please enter a URL to shorten.', 'warning');
+                return;
+            }
+             try {
+                new URL(link.startsWith('http') ? link : 'http://' + link);
+            } catch (_) {
+                showAlert('Please enter a valid URL format.', 'warning');
+                return;
+            }
+            if (!captcha) {
+                showAlert('Please enter the CAPTCHA code.', 'warning');
+                return;
+            }
+
+
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalText = submitBtn.html();
+            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+            submitBtn.prop('disabled', true);
+
+            $.ajax({
+                url: '/create/', // This should point to your create_api endpoint
+                method: 'POST',
+                data: {
+                    link: link,
+                    custom_code: custom_code,
+                    captcha: captcha,
+                    captcha_key: captchaKey,
+                    csrfmiddlewaretoken: token
+                },
+                success: function(data) {
+                    $('#shorten-form')[0].reset(); // Reset form fields
+                    refreshCaptcha(); // Refresh CAPTCHA for next use
+
+                    const shortUrlDisplay = window.location.origin + '/' + data.short_url;
+                    $('#resultBox').removeClass('d-none');
+                    $('#shortUrl').text(shortUrlDisplay);
+                    $('#shortUrl').attr('href', '/' + data.short_url); // Link to relative path for redirection
+
+                    $('#clickCount').text(data.click_count !== undefined ? data.click_count : 0);
+                    $('#creationDate').text(data.created_at ? data.created_at.split(',')[0] : 'Today'); // Simpler date
+
+                    const qrCodeImagePath = '/qr/' + data.short_url + '/'; // Ensure trailing slash if your URL pattern needs it
+                    $('#qrCode').attr('src', qrCodeImagePath);
+                    $('#downloadQr').attr('href', qrCodeImagePath);
+
+                    showAlert('URL shortened successfully!', 'success');
+                    $('html, body').animate({
+                        scrollTop: $('#resultBox').offset().top - 100
+                    }, 500);
+                },
+                error: function(xhr) {
+                    refreshCaptcha(); // Refresh CAPTCHA on error too
+                    const errorMsg = xhr.responseJSON?.error || 'An unexpected error occurred. Please try again.';
+                    showAlert(errorMsg, 'danger');
+                },
+                complete: function() {
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                }
+            });
+        });
+
+        function copyShortUrlToClipboard() {
+            const shortUrlText = $('#shortUrl').text();
+            navigator.clipboard.writeText(shortUrlText).then(() => {
+                const tooltip = $('#copyTooltip');
+                tooltip.addClass('show');
+                setTimeout(() => {
+                    tooltip.removeClass('show');
+                }, 2000);
+            }).catch(err => {
+                showAlert('Failed to copy URL. Please copy manually.', 'warning');
+                console.error('Clipboard copy failed: ', err);
+            });
+        }
+
+        function copyScannedUrlToClipboard() {
+            const url = $('#scannedUrl').text();
+            navigator.clipboard.writeText(url).then(() => {
+                showAlert('Scanned URL copied to clipboard!', 'success');
+            }).catch(err => {
+                showAlert('Failed to copy scanned URL.', 'warning');
+                console.error('Clipboard copy failed: ', err);
+            });
+        }
+
+        let scannerInterval = null;
+        let videoStream = null;
+        const videoElement = document.getElementById('scanner-preview');
+        const canvasElement = document.createElement('canvas'); // Create canvas once
+        const canvasContext = canvasElement.getContext('2d', { willReadFrequently: true });
+
+
+        $('#startScan').on('click', function() {
+            startScanner();
+        });
+
+        $('#stopScan').on('click', function() {
+            stopScanner();
+        });
+
+        function startScanner() {
+            $('#startScan').addClass('d-none');
+            $('#stopScan').removeClass('d-none');
+            $('#scanResultBox').addClass('d-none'); // Hide previous results
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(stream) {
+                    videoStream = stream;
+                    videoElement.srcObject = stream;
+                    videoElement.onloadedmetadata = () => { // Wait for video metadata to load
+                        canvasElement.width = videoElement.videoWidth;
+                        canvasElement.height = videoElement.videoHeight;
+                        scannerInterval = setInterval(scanQRCode, 300); // Scan more frequently
+                    };
+                })
+                .catch(function(error) {
+                    console.error('Camera access error:', error);
+                    showAlert('Could not access camera: ' + error.message + '. Please ensure permissions are granted.', 'danger');
+                    $('#stopScan').addClass('d-none');
+                    $('#startScan').removeClass('d-none');
+                });
+        }
+
+        function stopScanner() {
+            if (scannerInterval) {
+                clearInterval(scannerInterval);
+                scannerInterval = null;
+            }
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            videoElement.srcObject = null; // Clear video source
+            $('#stopScan').addClass('d-none');
+            $('#startScan').removeClass('d-none');
+        }
+
+        function scanQRCode() {
+            if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+                try {
+                    canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+                    const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert", // Or "attemptBoth" if needed
+                    });
+
+                    if (code && code.data) {
+                        stopScanner(); // Stop scanning once a code is found
+
+                        $('#scanResultBox').removeClass('d-none');
+                        $('#scannedUrl').text(code.data);
+                        $('#scannedUrl').attr('href', code.data);
+                        $('#visitScanned').attr('href', code.data);
+                        showAlert('QR Code detected!', 'success');
+
+                        $('html, body').animate({
+                            scrollTop: $('#scanResultBox').offset().top - 100
+                        }, 500);
+                    }
+                } catch (error) {
+                    console.error("Error during QR scanning:", error);
+                    // Optionally, show a subtle error or just let it keep trying
+                }
+            }
+        }
+
+        let alertTimeout;
+        function showAlert(message, type = 'info') {
+            const alertContainer = $('#alertContainer');
+            const alertId = 'alert-' + Date.now();
+            const alertHtml = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show m-2" role="alert" style="min-width: 250px;">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+
+            alertContainer.append(alertHtml);
+
+            // Auto dismiss after 5 seconds
+            clearTimeout(alertTimeout); // Clear previous timeout if any
+            alertTimeout = setTimeout(() => {
+                $('#' + alertId).alert('close');
+            }, 5000);
+        }
+
+    </script>
+</body>
+</html>
