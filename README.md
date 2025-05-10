@@ -1,7 +1,17 @@
 
-# QwikURL - URL Shortener Web App
+# QwikURL - URL Shortener Web App   
 
 QwikURL is a professional and user-friendly URL shortening service built with the goal of transforming long URLs into short, shareable links. It includes advanced features like custom aliases, QR code generation, and click analytics for tracking performance.
+
+## 🚀 Live Demo
+
+[![Live Site](https://img.shields.io/badge/Visit-Site-green)](https://qwikurl.onrender.com/)
+
+
+## 🔗 Deployed Link
+
+[https://qwikurl.onrender.com/](https://qwikurl.onrender.com/)
+
 
 ## 🔗 Features
 
